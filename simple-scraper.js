@@ -5,17 +5,28 @@ const util = require ('util');
 
 let readFilePromiseified = util.promisify(fs.readFile);
 
-async function main(){
-    let data = await readFilePromiseified('./AmazonSeller.csv');
+const newData = `A1ZLB4YH32IG4K
+AD3C6KQVZUT23
+AWKA0KIJDUVYN
+A3OJQJ1JZFURQV
+A2I5MH2FQVL8A9`;
 
-    let dataArr = String(data).split('\n');
+async function main(){
+    // let data = await readFilePromiseified('./AmazonSeller.csv');
+
+    // let dataArr = String(data).split('\n');
+    let dataArr = newData.split('\n');
 
     let urlArr = dataArr.map(x => `https://www.amazon.com/sp?_encoding=UTF8&asin=&isAmazonFulfilled=&isCBA=&marketplaceID=ATVPDKIKX0DER&orderID=&seller=${x}&tab=&vasStoreID=`);
 
     let titleArr = [];
     
     for (let i = 0; i < urlArr.length; i++) {
-        titleArr[i] = `${dataArr[i]}, ${await mapper(urlArr[i])}`;
+        let name = await mapper(urlArr[i]);
+        name = name.replace(/'/g, '\\\'');
+        
+        titleArr[i] = `('${dataArr[i]}','${name}'),`;
+
         //eslint-disable-next-line no-console
         console.log(titleArr[i]);
     }
